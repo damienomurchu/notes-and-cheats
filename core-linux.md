@@ -1,4 +1,4 @@
-# Linux for devs
+# Core Linux for software developers
 
 ## Why use Linux
 
@@ -26,5 +26,29 @@
 - $? - exit code of script just run
 
 
+### Defining & calling variables you define
+
 ### Conditional logic
 
+#### evaluating booleans
+
+Some common ways to evaluate booleans for control flow:
+
+```
+# check if a file exists
+
+# compare string values
+
+# compare numeric values
+
+```
+
+#### if/ elif/ else
+
+```
+# basic syntax (all below are valid)
+
+```
+
+
+#### case
