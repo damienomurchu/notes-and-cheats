@@ -10,3 +10,15 @@ Linux at its core offers a comprehensive suite of GNU utils that allow you to po
 
 ## Shell programming fundamentals
 
+### Inbuilt $ variables
+
+- $0 - name of script just run 
+- $1 - first argument passed to script ($1/ $2/ $3/ etc)
+- $* - all arguments passed to script
+- $# - number of arguments passed to script
+- $$ - process id of script run
+- $? - exit code of script just run
+
+
+### Conditional logic
+
