@@ -1,7 +1,8 @@
 # Git notes
 
-# Diff version of same file from 2 different branches
-git diff mybranch master -- myfile.cs
+# Common uses
+### Diff version of same file from 2 different branches
+`git diff mybranch master -- myfile.cs`
 
 
 
