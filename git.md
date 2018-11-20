@@ -1,4 +1,10 @@
-# Git dev notes
+# Git notes
+
+# Common uses
+### Diff version of same file from 2 different branches
+`git diff mybranch master -- myfile.cs`
+
+
 
 ### books
 
