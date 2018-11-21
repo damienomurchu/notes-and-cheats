@@ -112,4 +112,57 @@ mysql -uuser1 -h workstation.lab.example.com -pmypa55 -P13306 items #log into re
 MySQL[items]> insert into Item (description, done) values ('Finished lab', 1);
 
 ```
+# Chapter 3 Summary
+- Docker commands:
+  - docker run: Create a new container.
+  - docker ps: List containers.
+  - docker inspect: List metadata about a container.
+  - docker stop: Stop a container.
+  - docker kill: Stop a container forcefully.
+  - docker restart: Restart a stopped container.
+  - docker rm: Delete a container.
+- Container storage is said to be ephemeral, meaning its contents are not preserved after the container is removed.
+- To work with persistent data, a folder from the host can be used.
+- It is possible to mount a volume with the -v option in the docker run command.
+- The docker exec command starts an additional process inside a running container.
+- A port mapping can be used with the -p option in the docker run command.
 
+# Lab 4
+
+```bash
+lab container-images-lab setup
+
+# Start a new container using the Nginx image from the internal registry
+docker run --name official-nginx -d -p 8080:80 registry.lab.example.com/nginx
+
+# Log in to the container using the exec verb and update the content index.html file with DO180 Page.
+docker exec -it official-nginx /bin/bash
+echo 'DO180 Page' > /usr/share/nginx/html/index.html
+
+# Stop the running container and commit your changes to create a new container image. Give the new image a name of do180/mynginx and a tag of v1.0
+docker stop official-nginx
+docker commit -a 'Your Name' -m 'Changed index.html page' official-nginx
+docker images
+docker tag d77b234dec1c do180/mynginx:v1.0
+
+# Use the image tagged do180/mynginx:v1.0 to create a new container
+docker run -d --name my-nginx -p 8280:80 do180/mynginx:v1.0
+
+```
+
+# Chapter 4 Summary
+
+- Registries must be used to pull and push container images to private registries for internal use, or to public registries for outside consumption.
+  - The Red Hat Software Collections Library (RHSCL) provides tested and certified images at registry.access.redhat.com.
+  - Docker daemons support extra registries by editing the /etc/sysconfig/docker file and by adding new registries to the ADD_REGISTRY variable.
+  - In order to support registries with self-signed certificates, add the registry to the INSECURE_REGISTRY variable of the /etc/sysconfig/docker configuration file.
+  - Registries implement a RESTful API to pull, push, and manipulate objects. The API is used by the Docker daemon, but it can also be queried via tools such as curl.
+  - To search for an image in a public registry, use the docker search command.
+  - To search for an image in a private registry, use the docker-registry-cli command.
+  - To pull an image from a registry, use the docker pull command.
+  - Registries use tags as a mechanism to support multiple image releases.
+- The Docker daemon supports export and import procedures for image files using the docker export, docker import, docker save, and docker load commands.
+  - For most scenarios, using docker save and docker load command is the preferred approach.
+- The Docker daemon cache can be used as a staging area to customize and push images to a registry.
+- Docker also supports container image publication to a registry using the docker push command.
+- Container images from a daemon cache can be removed using the docker rmi command.
