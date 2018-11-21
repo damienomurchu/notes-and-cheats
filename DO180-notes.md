@@ -60,3 +60,56 @@ mysql> insert into Projects (id, name, code) values (1,'DevOps','DO180');
 mysql> select * from Projects;
 mysql> exit
 ```
+
+# Lab 3
+```bash
+lab work-containers setup
+sudo mkdir -p /var/local/mysql # create host folder to link to container data folder
+# Apply the appropriate SELinux context to the host folder.
+sudo chcon -R -t svirt_sandbox_file_t /var/local/mysql 
+# Change the owner of the host folder to the mysql user (uid=27) and mysql group (gid = 27).
+sudo chown -R 27:27 /var/local/mysql
+
+# create & start container 
+docker run --name mysql-1 \
+-d -v /var/local/mysql:/var/lib/mysql/data \ #link host folder to container folder
+-e MYSQL_USER=user1 -e MYSQL_PASSWORD=mypa55 \
+-e MYSQL_DATABASE=items -e MYSQL_ROOT_PASSWORD=r00tpa55 \
+rhscl/mysql-57-rhel7
+
+docker ps
+# Load the items database using the /home/student/DO180/labs/work-containers/db.sql script.
+docker inspect -f '{{ .NetworkSettings.IPAddress }}' mysql-1 #return ip address of container
+# load the database
+mysql -uuser1 -h <CONTAINER_IP> -pmypa55 items \ 
+< /home/student/DO180/labs/work-containers/db.sql
+# Verify that the database was loaded.
+mysql -uuser1 -h CONTAINER_IP -pmypa55 items -e "SELECT * FROM Item"
+
+# Create 2nd mysql container that accesses same persisted data
+docker run --name mysql-2 \
+-d -v /var/local/mysql:/var/lib/mysql/data \
+-p 13306:3306 \
+-e MYSQL_USER=user1 -e MYSQL_PASSWORD=mypa55 \
+-e MYSQL_DATABASE=items -e MYSQL_ROOT_PASSWORD=r00tpa55 \
+rhscl/mysql-57-rhel7
+
+docker ps
+
+# Save the list of all containers (including stopped ones) to the /tmp/my-containers file.
+docker ps -a > /tmp/my-containers
+
+# Access the bash shell inside the container and verify that the items database and the Item table are still available. Confirm also that the table contains data.
+docker exec -it mysql-2 /bin/bash
+mysql -uroot
+mysql> show databases;
+mysql> use items;
+mysql> show tables;
+mysql> SELECT * FROM Item;
+
+# Using the port forward, insert a new Finished lab row in the Item table.
+mysql -uuser1 -h workstation.lab.example.com -pmypa55 -P13306 items #log into remote mysql db
+MySQL[items]> insert into Item (description, done) values ('Finished lab', 1);
+
+```
+
