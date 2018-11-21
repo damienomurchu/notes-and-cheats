@@ -61,6 +61,19 @@ mysql> select * from Projects;
 mysql> exit
 ```
 
+# Chapter 2 Summary
+
+- Red Hat OpenShift Container Platform can be installed from RPM packages, from the client as a container, and in a dedicated virtual machine from Red Hat Container Development Kit (CDK).
+  - The RPM installation usually configures a cluster of multiple Linux nodes for production, QA, and testing environments.
+  - The containerized and CDK installations can be performed on a developer workstation, and supports Linux, MacOS, and Windows operating systems.
+- The minishift command from the CDK unpacks the virtual machine images, installs client tools, and starts the OpenShift cluster inside the virtual machine.
+- The oc cluster up command from the OpenShift client starts the local all-in-one cluster inside a container. It provides many command-line options to adapt to offline environments.
+- Before starting the local all-in-one cluster, the Docker daemon must be configured to allow accessing the local insecure registry.
+- The Docker Hub website provides a web interface to search for container images developed by the community and corporations. The Docker client can also search for images in Docker Hub.
+- The docker run command creates and starts a container from an image that can be pulled by the local Docker daemon.
+- Container images might require environment variables that are set using the -e option from the docker run command.
+- Red Hat Container Catalog assists in searching, exploring, and analyzing container images from Red Hat's official container image repository.
+
 # Lab 3
 ```bash
 lab work-containers setup
