@@ -178,4 +178,72 @@ docker run -d --name my-nginx -p 8280:80 do180/mynginx:v1.0
   - For most scenarios, using docker save and docker load command is the preferred approach.
 - The Docker daemon cache can be used as a staging area to customize and push images to a registry.
 - Docker also supports container image publication to a registry using the docker push command.
-- Container images from a daemon cache can be removed using the docker rmi command.
+- Container images from a daemon cache can be removed using the docker rmi command.ful
+
+# Chapter 5 Lab
+```
+vim Dockerfile
+
+# base image
+FROM rhel7:7.5
+
+# maintainer details
+MAINTAINER Damien Murphy <damurphy@redhat.com>
+
+# set env var for port number
+ENV PORT 8080
+
+# add repos & run yum install and clean
+ADD training.repo /etc/yum.repos.d/training.repo
+RUN yum install -y httpd && \
+yum clean all
+
+# replace port value in apache config file and change ownership of files
+RUN sed -ri -e '/^Listen 80/c\Listen ${PORT}' /etc/httpd/conf/httpd.conf \
+&& chown -R apache:apache /etc/httpd/logs/ \
+&& chown -R apache:apache /run/httpd/
+
+# sets apache user to execute any RUN, CMD, or ENTRYPOINT commands
+USER apache
+
+# expose port on container
+EXPOSE ${PORT}
+
+# copy host folder to html folder in container
+COPY ./src/ /var/www/html/
+
+# start httpd
+CMD ["httpd", "-D", "FOREGROUND"]
+
+docker build -t do180/custom-apache .
+
+docker images
+
+docker run --name lab-custom-images -d -p 20080:8080 do180/custom-apache
+
+curl 127.0.0.1:20080 #check container is serving properly
+```
+
+# Chapter 5 Summary
+
+- The usual method of creating container images is using Dockerfiles.
+- Dockerfiles provided by Red Hat or Docker Hub are a good starting point for creating custom images using a specific language or technology.
+- The Source-to-Image (S2I) process provides an alternative to Dockerfiles. S2I spares developers the need to learn low-level operating system commands and usually generates smaller images.
+- Building an image from a Dockerfile is a three-step process:
+  - Create a working directory.
+  - Write the Dockerfile specification.
+  - Build the image using the docker build command.
+- The RUN instruction is responsible for modifying image contents.
+- The following instructions are responsible for adding metadata to images:
+  - LABEL
+  - MAINTAINER
+  - EXPOSE
+- The default command that runs when the container starts can be changed with the RUN and ENTRYPOINT instructions.
+- The following instructions are responsible for managing the container environment:
+  - WORKDIR
+  - ENV
+  - USER
+- The VOLUME instruction creates a mount point in the container.
+- The Dockerfile provides two instructions to include resources in the container image:
+  - ADD
+  - COPY
