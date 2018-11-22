@@ -247,3 +247,121 @@ curl 127.0.0.1:20080 #check container is serving properly
 - The Dockerfile provides two instructions to include resources in the container image:
   - ADD
   - COPY
+
+
+# Chapter 6 Lab
+
+```bash 
+oc new-app  php:5.6~http://services.lab.example.com/temps 
+oc logs -f bc/temps
+oc get pods -w #watches pods
+oc expose svc/temps
+oc get route/temps
+curl temps-ocp.apps.lab.example.com
+```
+
+# Chapter 6 Summary
+
+- The OpenShift command line client oc is used to perform the following tasks in an OpenShift cluster:
+  - Logging in and out of an OpenShift cluster.
+  - Creating, changing, and deleting projects.
+  - Creating applications inside a project, including creating a deployment configuration from a container image, or a build configuration from application source and all associated resources.
+  - Creating, deleting, inspecting, editing, and exporting individual resources such as pods, services, and routes inside a project.
+  - Scaling applications.
+  - Starting new deployments and builds.
+  - Checking logs from application pods, deployments, and build operations.
+- The OpenShift Container Platform organizes entities in the OpenShift cluster as objects stored on the master node. These are collectively known as resources. The most common ones are:
+  - Pod
+  - Label
+  - Persistent Volume (PV)
+  - Persistent Volume Claim (PVC)
+  - Service
+  - Route
+  - Replication Controller (RC)
+  - Deployment Configuration (DC)
+  - Build Configuration (BC)
+  - Project
+- The oc new-app command can create application pods to run on OpenShift in many different ways. It can create pods from existing Docker images, from Dockerfiles, and from raw source code using the Source-to-Image (S2I) process.
+- Source-to-Image (S2I) is a facility that makes it easy to build a container image from application source code. This facility takes an application's source code from a Git server, injects the source code into a base container based on the language and framework desired, and produces a new container image that runs the assembled application.
+- A Route connects a public-facing IP address and DNS host name to an internal-facing service IP. While services allow for network access between pods inside an OpenShift instance, routes allow for network access to pods from users and applications outside the OpenShift instance.
+- You can create, build, deploy and monitor applications using the OpenShift web console.
+
+
+# Chapter 7 Lab
+
+```bash
+oc login -u admin -p redhat https://master.lab.example.com
+oc new-project deploy
+oc adm policy add-scc-to-user anyuid -z default #change security privileges for container to run
+docker build -t do180/mysql-57-rhel7 #build mysql db container
+
+# tag & push image to private registry
+docker tag do180/mysql-57-rhel7 registry.lab.example.com/do180/mysql-57-rhel7
+docker push registry.lab.example.com/do180/mysql-57-rhel7
+
+docker build -t do180/quote-php . #build php-quote container
+
+docker tag do180/quote-php registry.lab.example.com/do180/quote-php
+docker push registry.lab.example.com/do180/quote-php
+
+./create-pv.sh #create pv's
+# oc create -f PV.json #create PV from PV template file 
+
+oc create -f quote-php-template.json #create template from template file
+# process template & create application from resources specified by template
+oc process quote-php-persistent | oc create -f -
+oc process -f quote-php-persistent.json | oc create -f - #above didn't seem to work so created from template file instead
+
+# check pods are spinning up
+oc get pods -w #this seemed flaky
+
+oc expose svc quote-php #create a route
+oc get route #get created route
+curl http://quote-php-deploy.apps.lab.example.com #test app endpoint
+
+# clean-up
+oc delete project deploy
+./delete-pv.sh #delete pv's
+# oc delete pv pv0001 #delete pv by name
+docker rmi -f $(docker images -q)hisr
+
+```
+
+# Chapter 7 Summary
+
+- Containerized applications cannot rely on fixed IP addresses or host names to find services. Docker and Kubernetes provide mechanisms that define environment variables with network connection parameters.
+- The user-defined docker networks allow containers to contact other containers by names. To be able to communicate with each other, containers must be attached to the same user-defined docker network, using --network option with the docker run command.
+- Kubernetes services define environment variables injected into all pods from the same project.
+- Kubernetes templates automate creating applications consisting of multiple pods interconnected by services.
+- Template parameters define environment variables for multiple pods.
+
+
+# Chapter 8 Lab
+
+```bash
+lab troubleshooting-lab setup
+cd ~student/DO180/labs/troubleshooting-lab
+vim Dockerfile
+# add `COPY httpd.conf /etc/httpd/conf/` to Dockerfile to copy apache config to docker container
+docker build -t do180/broken-httpd . #build image
+docker run --name broken-httpd -d  -p 3000:80 -v /usr/bin:/usr/bin do180/broken-httpd #build and run container
+docker logs broken-httpd #check logs of container
+docker exec -it broken-httpd /bin/bash #ssh into running container
+[root@9ef58f71371c /] cat /var/www/html/index.html #check page in container
+ping materials.example.net #test url specified in page
+docker build -t do180/updated-httpd . #fix html page & build new image
+docker stop broken-httpd #stop faulty container
+docker rm broken-httpd #delete faulty container
+docker run --name updated-httpd -d -p 3000:80 -v /usr/bin:/usr/bin do180/updated-httpd #build new container from updated image & check if url ok now on updated page
+docker stop updated-httpd #stop updated container
+docker rm updated-httpd #delete updated container
+docker rmi do180/broken-httpd do180/updated-httpd #delete images
+
+```
+
+# Chapter 8 Summary
+
+- S2I images requires that security concerns must be addressed to minimize build and deployment issues.
+- Development and sysadmin teams must work together to identify and mitigate problems with respect to S2I image creation process.
+- Troubleshoot containers by using the oc port-forward command to debug applications as a last resource.
+- OpenShift events provide low-level information about a container and its interactions. They can be used as a last resource to identify communication problems.
