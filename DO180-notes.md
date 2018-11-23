@@ -365,3 +365,73 @@ docker rmi do180/broken-httpd do180/updated-httpd #delete images
 - Development and sysadmin teams must work together to identify and mitigate problems with respect to S2I image creation process.
 - Troubleshoot containers by using the oc port-forward command to debug applications as a last resource.
 - OpenShift events provide low-level information about a container and its interactions. They can be used as a last resource to identify communication problems.
+
+# Chapter 9 Lab
+
+
+# Chapter 9 - Course Recap
+
+- Chapter 1, Getting Started with Container Technology
+Describe how software can run in containers orchestrated by Red Hat OpenShift Container Platform.
+  - Describe the architecture of Linux containers.
+  - Describe how containers are implemented using Docker.
+  - Describe the architecture of a Kubernetes cluster running on the Red Hat OpenShift Container Platform.
+- Chapter 2, Creating Containerized Services
+Provision a server using container technology.
+  - Describe three container development environment scenarios and build one using OpenShift.
+  - Create a database server from a container image stored on Docker Hub.
+- Chapter 3, Managing Containers
+Manipulate pre-built container images to create and manage containerized services.
+  - Manage the life cycle of a container from creation to deletion.
+  - Save application data across container restarts through the use of persistent storage.
+  - Describe how Docker provides network access to containers, and access a container through port forwarding.
+- Chapter 4, Managing Container Images
+Manage the life cycle of a container image from creation to deletion.
+  - Search for and pull images from remote registries.
+  - Export, import, and manage container images locally and in a registry.
+- Chapter 5, Creating Custom Container Images
+Design and code a Dockerfile to build a custom container image.
+  - Describe the approaches for creating custom container images.
+  - Create a container image using common Dockerfile commands.
+- Chapter 6, Deploying Containerized Applications on OpenShift
+Deploy single container applications on OpenShift Container Platform.
+  - Install the OpenShift CLI tool and execute basic commands.
+  - Create standard Kubernetes resources.
+  - Build an application using the Source-to-Image facility of OpenShift.
+  - Create a route to a service.
+  - Create an application using the OpenShift web console.
+- Chapter 7, Deploying Multi-Container Applications
+Deploy applications that are containerized using multiple container images.
+  - Describe the considerations for containerizing applications with multiple container images.
+  - Deploy a multi-container application with user-defined Docker network.
+  - Deploy a multi-container application on OpenShift using a template.
+- Chapter 8, Troubleshooting Containerized Applications
+Troubleshoot a containerized application deployed on OpenShift.
+  - Troubleshoot an application build and deployment on OpenShift.
+  - Implement techniques for troubleshooting and debugging containerized applications.
+
+# Chapter 9 General Hints
+These hints may save some time in completing the comprehensive review lab:
+- The docker command allows you to build, run, and manage container images. Docker command documentation can be found by issuing the command man docker.
+- The oc command allows you to create and manage OpenShift resources. OpenShift command-line documentation can be found by issuing either of the commands man oc or oc help. OpenShift commands that are particularly useful include:
+  - oc login -u
+Log in to OpenShift as the specified user. In this classroom, there are two user accounts defined: admin and developer.
+  - oc new-project
+Create a new project (namespace) to contain OpenShift resources.
+  - oc project
+Select the current project (namespace) to which all subsequent commands apply.
+  - oc create -f
+Create a resource from a file.
+  - oc process -f
+Convert a template into OpenShift resources that can be created with the oc create command.
+  - oc get
+Display the runtime status and attributes of OpenShift resources.
+  - oc describe
+Display detailed information about OpenShift resources.
+  - oc delete
+Delete OpenShift resources. The label option, -l label-value is helpful with this command to delete multiple resources simultaneously.
+  - Before mounting any volumes on the Docker and OpenShift host, make sure to apply the correct SELinux context to the directory. The correct context is svirt_sandbox_file_t. Also, make sure the ownership and permissions of the directory are set according to the USER directive in the Dockerfile that was used to build the container being deployed. Most of the time you will have to use the numeric UID and GID rather than the user and group names to adjust ownership and permissions of the volume directory.
+  - In this classroom, all RPM repositories are defined locally. You must configure the repository definitions in a custom container image (Dockerfile) before running yum commands.
+  - When executing commands in a Dockerfile, combine as many related commands as possible into one RUN directive. This reduces the number of UFS layers in the container image.
+  - A best practice for designing a Dockerfile includes the use of environment variables for specifying repeated constants throughout the file.
+
