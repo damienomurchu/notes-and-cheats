@@ -435,3 +435,13 @@ Delete OpenShift resources. The label option, -l label-value is helpful with thi
   - When executing commands in a Dockerfile, combine as many related commands as possible into one RUN directive. This reduces the number of UFS layers in the container image.
   - A best practice for designing a Dockerfile includes the use of environment variables for specifying repeated constants throughout the file.
 
+# Appendix Lab
+
+
+# Appendix Summary
+
+- Breaking a monolithic application into multiple containers allows for greater application scalability, makes upgrades easier, and allows higher hardware utilization.
+- The three common tiers for logical division of an application are the presentation tier, the business tier, and the persistence tier.
+- Cross-Origin Resource Sharing (CORS) can prevent Ajax calls to servers different from the one from where the pages were downloaded. Be sure to make provisions to allow CORS from other containers in the application.
+- Container images are intended to be immutable, but configurations can be passed in either at image build time or by creating persistent storage for configurations.
+- Passing environment variables into a container is not an ideal solution for starting an application composed of multiple containers, because it is prone to typing mistakes, or the connection information can be dynamic. Docker's user-defined networks resolve this issue.
