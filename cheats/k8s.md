@@ -69,5 +69,8 @@ kubectl label po kubia-manual creation_method=manual
 kubectl label po kubia-manual-v2 env=debug --overwrite
 
 # show creation_method and env as columns
-kubectl get po -L creation_method,env  
+kubectl get po -L creation_method,env
+
+# get pods in kube-system namespace
+kubectl get po --namespace kube-system
 ```
