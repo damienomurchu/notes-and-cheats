@@ -8,6 +8,12 @@
 - Installed Brave browser + bitwarden 
 - Enable Windows subsystem for linux  
 - Installed Ubuntu 18.04 LTS 
+- Installed chocolatey - https://chocolatey.org/install#install-with-cmdexe
+
+## Todo
+
+- check windows defender security options for best defense
+
 
 ## Appendix
 
